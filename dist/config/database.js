@@ -1,22 +1,50 @@
 "use strict";
+// import { Pool } from 'pg'
+// import dotenv from 'dotenv'
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pool = void 0;
+// dotenv.config()
+// export const pool = new Pool({
+//   host: process.env.DB_HOST || 'localhost',
+//   port: parseInt(process.env.DB_PORT || '5432'),
+//   database: process.env.DB_NAME || 'resort_booking',
+//   user: process.env.DB_USER || 'postgres',
+//   password: process.env.DB_PASSWORD || '',
+//   max: 20,
+//   idleTimeoutMillis: 30000,
+//   connectionTimeoutMillis: 2000,
+// })
+// // Test connection
+// pool.on('connect', () => {
+//   console.log('Connected to PostgreSQL database')
+// })
+// pool.on('error', (err) => {
+//   console.error('Unexpected error on idle client', err)
+//   process.exit(-1)
+// })
 const pg_1 = require("pg");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-exports.pool = new pg_1.Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    database: process.env.DB_NAME || 'resort_booking',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-});
+exports.pool = new pg_1.Pool(process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false, // Required for Render PostgreSQL
+        },
+    }
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        database: process.env.DB_NAME || 'resort_booking',
+        user: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD || '',
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+    });
 // Test connection
 exports.pool.on('connect', () => {
     console.log('Connected to PostgreSQL database');
